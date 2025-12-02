@@ -1,0 +1,54 @@
+class apb_sequence_item extends uvm_sequence_item;
+  rand logic [`ADDR_WIDTH-1:0]   paddr;      // Address
+  rand logic                     psel;       // Slave select
+  rand logic                     pwrite;     // Write control (1=Write, 0=Read)
+  rand logic [`DATA_WIDTH-1:0]   pwdata;     // Write data
+  rand logic [`STRB_WIDTH-1:0]   pstrb;      // Write strobe
+  
+  logic [`DATA_WIDTH-1:0]        prdata;     // Read data
+  logic                          pready;     // Ready signal
+  logic                          pslverr;    // Error signal
+  
+  // Constraints 
+  constraint valid_addr_c {
+    paddr inside {[0:`MEM_DEPTH-1]};  // Valid address range
+  }
+  
+  constraint valid_strb_c {
+    pstrb != 4'b0000;  // At least one byte should be enabled during write
+  }
+  
+  // Constraint to make PSEL mostly high for valid transfers
+  constraint psel_dist_c {
+    psel dist {1'b1 := 90, 1'b0 := 10};
+  }
+  
+  function new(string name="apb_sequence_item");
+    super.new(name);
+  endfunction
+  
+  `uvm_object_utils_begin(apb_sequence_item)
+    `uvm_field_int(paddr,   UVM_ALL_ON)
+    `uvm_field_int(psel,    UVM_ALL_ON)
+    `uvm_field_int(pwrite,  UVM_ALL_ON)
+    `uvm_field_int(pwdata,  UVM_ALL_ON)
+    `uvm_field_int(pstrb,   UVM_ALL_ON)
+    `uvm_field_int(prdata,  UVM_ALL_ON)
+    `uvm_field_int(pready,  UVM_ALL_ON)
+    `uvm_field_int(pslverr, UVM_ALL_ON)
+  `uvm_object_utils_end 
+  
+  virtual function void do_print(uvm_printer printer);
+    super.do_print(printer);
+    printer.print_string("operation", pwrite ? "WRITE" : "READ");
+    printer.print_field("paddr", paddr, $bits(paddr), UVM_HEX);
+    if (pwrite) begin
+      printer.print_field("pwdata", pwdata, $bits(pwdata), UVM_HEX);
+      printer.print_field("pstrb", pstrb, $bits(pstrb), UVM_BIN);
+    end else begin
+      printer.print_field("prdata", prdata, $bits(prdata), UVM_HEX);
+    end
+    printer.print_field("pslverr", pslverr, 1, UVM_BIN);
+  endfunction
+
+endclass
