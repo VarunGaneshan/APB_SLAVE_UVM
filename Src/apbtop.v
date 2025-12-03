@@ -1,4 +1,3 @@
-/*New Design*/
 //==============================================================================
 // APB Slave with Internal Memory
 // Description: General APB slave module with configurable data and address width
@@ -102,46 +101,4 @@ module apb_slave #(
             end
         end
     end
-endmodule
-	/*
-    //==========================================================================
-    // Optional: Memory Initialization for Simulation/Debug
-    //==========================================================================
-    `ifdef SIMULATION
-    initial begin
-        // Initialize some memory locations with test patterns
-        memory[0] = 32'hDEADBEEF;
-        memory[1] = 32'hCAFEBABE;
-        memory[2] = 32'h12345678;
-        memory[3] = 32'hABCDEF00;
-        // Initialize rest to zero
-        for (i = 4; i < MEM_DEPTH; i = i + 1) begin
-            memory[i] = {DATA_WIDTH{1'b0}};
-        end
-    end
-    `endif
- 	*/
- 
- 
-//==============================================================================
-// Example Instantiation
-//==============================================================================
-/*
-apb_slave #(
-    .ADDR_WIDTH(8),
-    .DATA_WIDTH(32),
-    .MEM_DEPTH(256)
-) u_apb_slave (
-    .PCLK     (pclk),
-    .PRESETn  (presetn),
-    .PADDR    (paddr),
-    .PSEL     (psel),
-    .PENABLE  (penable),
-    .PWRITE   (pwrite),
-    .PWDATA   (pwdata),
-    .PSTRB    (pstrb),
-    .PRDATA   (prdata),
-    .PREADY   (pready),
-    .PSLVERR  (pslverr)
-);
-*/
+endmodule 
