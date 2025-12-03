@@ -1,26 +1,24 @@
 class apb_sequence_item extends uvm_sequence_item;
-  rand logic [`ADDR_WIDTH-1:0]   paddr;      // Address
-  rand logic                     psel;       // Slave select
-  rand logic                     pwrite;     // Write control (1=Write, 0=Read)
-  rand logic [`DATA_WIDTH-1:0]   pwdata;     // Write data
-  rand logic [`STRB_WIDTH-1:0]   pstrb;      // Write strobe
+  rand logic [`ADDR_WIDTH-1:0]   paddr;      
+  rand logic                     psel;       
+  rand logic                     pwrite;     
+  rand logic [`DATA_WIDTH-1:0]   pwdata;   
+  rand logic [`STRB_WIDTH-1:0]   pstrb;     
   
-  logic [`DATA_WIDTH-1:0]        prdata;     // Read data
-  logic                          pready;     // Ready signal
-  logic                          pslverr;    // Error signal
-  
-  // Constraints 
+  logic [`DATA_WIDTH-1:0]        prdata;     
+  logic                          pready;   
+  logic                          pslverr;    
+
   constraint valid_addr_c {
-    paddr inside {[0:`MEM_DEPTH-1]};  // Valid address range
+    soft paddr inside {[0:`MEM_DEPTH-1]};  // Valid address range
   }
   
   constraint valid_strb_c {
-    pstrb != 4'b0000;  // At least one byte should be enabled during write
+    soft pstrb != 4'b0000;  // At least one byte should be enabled during write
   }
-  
-  // Constraint to make PSEL mostly high for valid transfers
-  constraint psel_dist_c {
-    psel dist {1'b1 := 90, 1'b0 := 10};
+
+  constraint psel {
+    soft psel == 1'b1; //PSEL mostly high for valid transfers
   }
   
   function new(string name="apb_sequence_item");
