@@ -24,20 +24,28 @@ class apb_passive_monitor extends uvm_monitor;
     @(posedge vif.presetn);
     `uvm_info(get_type_name(), $sformatf("[%0t] Reset De-asserted", $time), UVM_LOW)
     
-    @(vif.pas_mon_cb);
-    
     forever begin
-      @(vif.pas_mon_cb);
-      // Capture outputs when there's a valid transfer
-      // We check the interface directly for PSEL and PENABLE
+      // Wait for valid APB transfer at clock edge
+      @(posedge vif.pclk);
+      
       if (vif.psel && vif.penable) begin
+        // Capture inputs during ACCESS phase
         mon_trans = apb_sequence_item::type_id::create("mon_trans");
+        
+        // Wait one more clock to get registered outputs from DUT
+        @(posedge vif.pclk);
         capture_outputs();
+        
+        // Send complete transaction to scoreboard and subscriber
         mon_port.write(mon_trans);
         
         `uvm_info(get_type_name(), 
-                  $sformatf("[%0t] Captured Outputs: PRDATA=0x%0h, PREADY=%0b, PSLVERR=%0b", 
-                           $time, 
+                  $sformatf("[%0t] Captured Transaction: ADDR=0x%0h, WRITE=%0b, WDATA=0x%0h, STRB=0x%0h, RDATA=0x%0h, READY=%0b, SLVERR=%0b", 
+                           $time,
+                           mon_trans.paddr,
+                           mon_trans.pwrite,
+                           mon_trans.pwdata,
+                           mon_trans.pstrb,
                            mon_trans.prdata, 
                            mon_trans.pready,
                            mon_trans.pslverr), 
@@ -46,11 +54,11 @@ class apb_passive_monitor extends uvm_monitor;
     end
   endtask             
          
-  // Capture output signals
+  // Capture output signals after registered outputs update
   virtual task capture_outputs();
-    mon_trans.prdata  = vif.pas_mon_cb.prdata;
-    mon_trans.pready  = vif.pas_mon_cb.pready;
-    mon_trans.pslverr = vif.pas_mon_cb.pslverr;
+    mon_trans.prdata  = vif.prdata;
+    mon_trans.pready  = vif.pready;
+    mon_trans.pslverr = vif.pslverr;
   endtask
   
 endclass

@@ -16,7 +16,7 @@ class apb_scoreboard extends uvm_scoreboard;
   uvm_tlm_analysis_fifo #(apb_sequence_item) op_fifo;
 
   // Reference memory model (matches DUT memory)
-  logic [`DATA_WIDTH-1:0] ref_memory [0:`MEM_DEPTH-1]; 
+  bit [`DATA_WIDTH-1:0] ref_memory [0:`MEM_DEPTH-1]; 
 
   function new(string name="apb_scoreboard", uvm_component parent=null);
     super.new(name, parent);
@@ -27,11 +27,6 @@ class apb_scoreboard extends uvm_scoreboard;
     write_transactions = 0;
     read_transactions = 0;
     error_transactions = 0;
-    
-    // Initialize reference memory to zero
-    for (int i = 0; i < `MEM_DEPTH; i++) begin
-      ref_memory[i] = 32'h0;
-    end
   endfunction
 
   virtual function void build_phase(uvm_phase phase);

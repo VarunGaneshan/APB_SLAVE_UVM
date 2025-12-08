@@ -25,12 +25,11 @@ class apb_active_monitor extends uvm_monitor;
       @(posedge vif.presetn);
     end
     
-    @(vif.act_mon_cb);
-    
     forever begin
-      // Wait for valid APB transfer (PSEL=1 and PENABLE=1)
-      @(vif.act_mon_cb);
-      if (vif.act_mon_cb.psel && vif.act_mon_cb.penable) begin
+      // Wait for valid APB transfer at clock edge
+      @(posedge vif.pclk);
+      
+      if (vif.psel && vif.penable) begin
         mon_trans = apb_sequence_item::type_id::create("mon_trans");
         capture_inputs();
         mon_port.write(mon_trans);
@@ -42,19 +41,18 @@ class apb_active_monitor extends uvm_monitor;
                            mon_trans.paddr, 
                            mon_trans.pwdata,
                            mon_trans.pstrb), 
-                  UVM_MEDIUM)
+                          UVM_MEDIUM)
       end
     end
   endtask
 
   // Capture input signals during ACCESS phase
   task capture_inputs();
-    mon_trans.paddr  = vif.act_mon_cb.paddr;
-    mon_trans.psel   = vif.act_mon_cb.psel;
-    mon_trans.penable= 1'b1;  // We only capture during ACCESS phase
-    mon_trans.pwrite = vif.act_mon_cb.pwrite;
-    mon_trans.pwdata = vif.act_mon_cb.pwdata;
-    mon_trans.pstrb  = vif.act_mon_cb.pstrb;
+    mon_trans.paddr  = vif.paddr;
+    mon_trans.psel   = vif.psel;
+    mon_trans.pwrite = vif.pwrite;
+    mon_trans.pwdata = vif.pwdata;
+    mon_trans.pstrb  = vif.pstrb;
   endtask
 
 endclass    

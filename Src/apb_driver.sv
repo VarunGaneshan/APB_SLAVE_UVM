@@ -42,7 +42,6 @@ class apb_driver extends uvm_driver#(apb_sequence_item);
     vif.pstrb   <= '0;
   endtask
 
-  // Drive APB transaction with proper SETUP and ACCESS phases
   task drive_transaction();
     if (drv_trans.psel) begin
       // SETUP Phase
@@ -70,22 +69,13 @@ class apb_driver extends uvm_driver#(apb_sequence_item);
       @(vif.drv_cb);
       vif.drv_cb.penable <= 1'b1;
       
-      // Wait for PREADY (for this slave it's always 1, but good practice)
+      // Wait for PREADY
       wait(vif.pready == 1'b1);
       
       `uvm_info(get_type_name(), 
                 $sformatf("[%0t] ACCESS Phase - Transfer Complete", $time), 
                 UVM_MEDIUM)
-      
-      // Return to IDLE
-      @(vif.drv_cb);
-      vif.drv_cb.psel    <= 1'b0;
-      vif.drv_cb.penable <= 1'b0;
-      vif.drv_cb.pwrite  <= 1'b0;
-      vif.drv_cb.paddr   <= '0;
-      vif.drv_cb.pwdata  <= '0;
-      vif.drv_cb.pstrb   <= '0;
-      
+
     end else begin
       // IDLE cycle
       @(vif.drv_cb);

@@ -17,7 +17,7 @@ class apb_sequence_item extends uvm_sequence_item;
     soft pstrb != 4'b0000;  // At least one byte should be enabled during write
   }
 
-  constraint psel {
+  constraint psel_val {
     soft psel == 1'b1; //PSEL mostly high for valid transfers
   }
   

@@ -28,9 +28,9 @@ class apb_env extends uvm_env;
     super.connect_phase(phase);
 
     active_agent.active_monitor.mon_port.connect(scoreboard.ip_fifo.analysis_export);
-    active_agent.active_monitor.mon_port.connect(subscriber.active_export);
+    active_agent.active_monitor.mon_port.connect(subscriber.ip_fifo.analysis_export);
     passive_agent.passive_monitor.mon_port.connect(scoreboard.op_fifo.analysis_export);
-    passive_agent.passive_monitor.mon_port.connect(subscriber.passive_export);
+    passive_agent.passive_monitor.mon_port.connect(subscriber.op_fifo.analysis_export);
     
     `uvm_info(get_type_name(), "Connect phase complete", UVM_HIGH)
   endfunction

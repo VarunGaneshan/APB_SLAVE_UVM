@@ -1,17 +1,13 @@
-//==============================================================================
-// Bind APB Assertions to Interface
-//==============================================================================
-
-bind apb_if apb_assertions apb_if_assert_inst (
-  .pclk    (pclk),
-  .presetn (presetn),
-  .paddr   (paddr),
-  .psel    (psel),
-  .penable (penable),
-  .pwrite  (pwrite),
-  .pwdata  (pwdata),
-  .pstrb   (pstrb),
-  .prdata  (prdata),
-  .pready  (pready),
-  .pslverr (pslverr)
+bind apb_slave apb_assertions apb_assert_inst (
+  .pclk    (PCLK),
+  .presetn (PRESETn),
+  .paddr   (PADDR),
+  .psel    (PSEL),
+  .penable (PENABLE),
+  .pwrite  (PWRITE),
+  .pwdata  (PWDATA),
+  .pstrb   (PSTRB),
+  .prdata  (PRDATA),
+  .pready  (PREADY),
+  .pslverr (PSLVERR)
 );

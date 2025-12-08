@@ -1,6 +1,3 @@
-//==============================================================================
-// Base Sequence
-//==============================================================================
 class apb_base_sequence extends uvm_sequence #(apb_sequence_item);
   `uvm_object_utils(apb_base_sequence)
   int no_of_trans;
@@ -10,9 +7,6 @@ class apb_base_sequence extends uvm_sequence #(apb_sequence_item);
   endfunction
 endclass
 
-//==============================================================================
-// Write Sequence - Sequential writes with full byte strobes
-//==============================================================================
 class apb_write_sequence extends uvm_sequence #(apb_sequence_item);
   `uvm_object_utils(apb_write_sequence)
   int no_of_trans;
@@ -25,7 +19,7 @@ class apb_write_sequence extends uvm_sequence #(apb_sequence_item);
     apb_sequence_item item;
     
     if (!$value$plusargs("no_of_trans=%d", no_of_trans)) begin
-      no_of_trans = 10;
+      no_of_trans = 256;
     end
     
     repeat (no_of_trans) begin
@@ -46,9 +40,6 @@ class apb_write_sequence extends uvm_sequence #(apb_sequence_item);
   endtask
 endclass
 
-//==============================================================================
-// Read Sequence - Sequential reads
-//==============================================================================
 class apb_read_sequence extends uvm_sequence #(apb_sequence_item);
   `uvm_object_utils(apb_read_sequence)
   int no_of_trans;
@@ -61,7 +52,7 @@ class apb_read_sequence extends uvm_sequence #(apb_sequence_item);
     apb_sequence_item item;
     
     if (!$value$plusargs("no_of_trans=%d", no_of_trans)) begin
-      no_of_trans = 10;
+      no_of_trans = 256;
     end
     
     repeat (no_of_trans) begin
@@ -80,9 +71,6 @@ class apb_read_sequence extends uvm_sequence #(apb_sequence_item);
   endtask
 endclass
 
-//==============================================================================
-// Write-Read Sequence - Write followed by read from same address
-//==============================================================================
 class apb_write_read_sequence extends uvm_sequence #(apb_sequence_item);
   `uvm_object_utils(apb_write_read_sequence)
   int no_of_trans;
@@ -97,7 +85,7 @@ class apb_write_read_sequence extends uvm_sequence #(apb_sequence_item);
     logic [`DATA_WIDTH-1:0] data;
     
     if (!$value$plusargs("no_of_trans=%d", no_of_trans)) begin
-      no_of_trans = 10;
+      no_of_trans = 256;
     end
     
     repeat (no_of_trans) begin
@@ -133,9 +121,6 @@ class apb_write_read_sequence extends uvm_sequence #(apb_sequence_item);
   endtask
 endclass
 
-//==============================================================================
-// Byte Strobe Sequence - Test partial byte writes
-//==============================================================================
 class apb_byte_strobe_sequence extends uvm_sequence #(apb_sequence_item);
   `uvm_object_utils(apb_byte_strobe_sequence)
   
@@ -150,10 +135,7 @@ class apb_byte_strobe_sequence extends uvm_sequence #(apb_sequence_item);
     test_addr = $urandom_range(0, `MEM_DEPTH-1);
     
     // Test all byte strobe combinations
-    foreach ({4'b0001, 4'b0010, 4'b0100, 4'b1000, 
-              4'b0011, 4'b1100, 4'b0101, 4'b1010,
-              4'b0111, 4'b1110, 4'b1011, 4'b1101,
-              4'b1111}[i]) begin
+    for(int i=0;i<16;i++) begin
       item = apb_sequence_item::type_id::create("strb_item");
       start_item(item);
       assert(item.randomize() with {
@@ -169,14 +151,11 @@ class apb_byte_strobe_sequence extends uvm_sequence #(apb_sequence_item);
                 $sformatf("STRB Test: ADDR=0x%0h, DATA=0x%0h, STRB=0b%04b", 
                          item.paddr, item.pwdata, item.pstrb), 
                 UVM_MEDIUM);
-      finish_item(item);
+      finish_item(item); 
     end
   endtask
 endclass
 
-//==============================================================================
-// Error Sequence - Out-of-range address accesses
-//==============================================================================
 class apb_error_sequence extends uvm_sequence #(apb_sequence_item);
   `uvm_object_utils(apb_error_sequence)
   
@@ -215,9 +194,6 @@ class apb_error_sequence extends uvm_sequence #(apb_sequence_item);
   endtask
 endclass
 
-//==============================================================================
-// Random Sequence - Mixed random operations
-//==============================================================================
 class apb_random_sequence extends uvm_sequence #(apb_sequence_item);
   `uvm_object_utils(apb_random_sequence)
   int no_of_trans;
@@ -230,7 +206,7 @@ class apb_random_sequence extends uvm_sequence #(apb_sequence_item);
     apb_sequence_item item;
     
     if (!$value$plusargs("no_of_trans=%d", no_of_trans)) begin
-      no_of_trans = 100;
+      no_of_trans = 256;
     end
     
     repeat (no_of_trans) begin
@@ -255,9 +231,6 @@ class apb_random_sequence extends uvm_sequence #(apb_sequence_item);
   endtask
 endclass
 
-//==============================================================================
-// Burst Write Sequence - Sequential address writes
-//==============================================================================
 class apb_burst_write_sequence extends uvm_sequence #(apb_sequence_item);
   `uvm_object_utils(apb_burst_write_sequence)
   int burst_length;
@@ -294,9 +267,6 @@ class apb_burst_write_sequence extends uvm_sequence #(apb_sequence_item);
   endtask
 endclass
 
-//==============================================================================
-// Burst Read Sequence - Sequential address reads
-//==============================================================================
 class apb_burst_read_sequence extends uvm_sequence #(apb_sequence_item);
   `uvm_object_utils(apb_burst_read_sequence)
   int burst_length;
@@ -332,9 +302,6 @@ class apb_burst_read_sequence extends uvm_sequence #(apb_sequence_item);
   endtask
 endclass
 
-//==============================================================================
-// Idle Sequence - Generate idle cycles
-//==============================================================================
 class apb_idle_sequence extends uvm_sequence #(apb_sequence_item);
   `uvm_object_utils(apb_idle_sequence)
   int idle_cycles;
@@ -354,7 +321,6 @@ class apb_idle_sequence extends uvm_sequence #(apb_sequence_item);
       item = apb_sequence_item::type_id::create("idle_item");
       start_item(item);
       item.psel = 1'b0;
-      item.penable = 1'b0;
       item.pwrite = 1'b0;
       item.paddr = '0;
       item.pwdata = '0;
