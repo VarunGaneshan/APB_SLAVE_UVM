@@ -135,7 +135,7 @@ class apb_byte_strobe_sequence extends uvm_sequence #(apb_sequence_item);
     test_addr = $urandom_range(0, `MEM_DEPTH-1);
     
     // Test all byte strobe combinations
-    for(int i=0;i<16;i++) begin
+    for(int i=0;i<15;i++) begin
       item = apb_sequence_item::type_id::create("strb_item");
       start_item(item);
       assert(item.randomize() with {

@@ -7,12 +7,11 @@ class apb_subscriber extends uvm_component;
   uvm_tlm_analysis_fifo #(apb_sequence_item) ip_fifo;
   uvm_tlm_analysis_fifo #(apb_sequence_item) op_fifo;
   
+  //============================================================================
+  // Coverage Groups
+  //============================================================================
+  
   covergroup input_cov;
-    PWRITE: coverpoint t1.pwrite {
-      bins write = {1};
-      bins read = {0};
-    }
-    
     PADDR_WRITE: coverpoint t1.paddr iff (t1.pwrite) {
       bins low_range = {[0:84]};
       bins mid_range = {[85:169]};
@@ -32,13 +31,10 @@ class apb_subscriber extends uvm_component;
     }
     
     PSTRB: coverpoint t1.pstrb iff (t1.pwrite) {
-      bins byte0 = {4'b0001};
-      bins byte1 = {4'b0010};
-      bins byte2 = {4'b0100};
-      bins byte3 = {4'b1000};
-      bins all_bytes = {4'b1111};
-      bins other = default;
+      bins strobe_bins[]={[1:15]};
     }
+    
+    WRITE_ADDR_X_STRB: cross PADDR_WRITE, PSTRB;
   endgroup
   
   covergroup output_cov;
