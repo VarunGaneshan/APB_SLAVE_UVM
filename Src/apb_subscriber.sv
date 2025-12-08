@@ -7,10 +7,6 @@ class apb_subscriber extends uvm_component;
   uvm_tlm_analysis_fifo #(apb_sequence_item) ip_fifo;
   uvm_tlm_analysis_fifo #(apb_sequence_item) op_fifo;
   
-  //============================================================================
-  // Coverage Groups
-  //============================================================================
-  
   covergroup input_cov;
     PWRITE: coverpoint t1.pwrite {
       bins write = {1};
